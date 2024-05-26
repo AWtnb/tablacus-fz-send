@@ -25,15 +25,6 @@ func getChildItem(root string) (paths []string) {
 	return
 }
 
-func GetChildDir(root string) (paths []string) {
-	for _, p := range getChildItem(root) {
-		if fs, err := os.Stat(p); err == nil && fs.IsDir() {
-			paths = append(paths, p)
-		}
-	}
-	return
-}
-
 func Show(path string) {
 	left := getChildItem(path)
 	if len(left) < 1 {
@@ -81,14 +72,28 @@ func (d *Dir) Init(path string) {
 	d.member = getChildItem(d.path)
 }
 
-func (d *Dir) Except(path string) {
+func (d *Dir) ExceptSelf() {
 	paths := []string{}
 	for _, p := range d.member {
-		if p != path {
+		if p != d.path {
 			paths = append(paths, p)
 		}
 	}
 	d.member = paths
+}
+
+func (d *Dir) ExceptFiles() {
+	paths := []string{}
+	for _, p := range d.member {
+		if fs, err := os.Stat(p); err == nil && fs.IsDir() {
+			paths = append(paths, p)
+		}
+	}
+	d.member = paths
+}
+
+func (d Dir) Member() []string {
+	return d.member
 }
 
 func (d Dir) SelectItems(query string) (ps []string, err error) {

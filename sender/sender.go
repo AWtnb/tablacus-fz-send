@@ -16,22 +16,13 @@ func showLabel(heading string, s string) {
 	fmt.Printf("\n\n[%s] %s:\n\n", strings.ToUpper(heading), s)
 }
 
-func sliceExcept(ss []string, exc string) (filtered []string) {
-	for _, s := range ss {
-		if s != exc {
-			filtered = append(filtered, s)
-		}
-	}
-	return
-}
-
 type Sender struct {
 	Src   string
 	Dest  string
 	Focus string
 }
 
-func (sdr Sender) toTrash() bool {
+func (sdr Sender) isDisposal() bool {
 	return sdr.Dest == "_obsolete"
 }
 
@@ -52,12 +43,15 @@ func (sdr Sender) DestPath() (string, error) {
 	if strings.Contains(sdr.Dest, string(os.PathSeparator)) {
 		return "", fmt.Errorf("invalid dest path")
 	}
-	if sdr.toTrash() {
+	if sdr.isDisposal() {
 		return dir.Create(sdr.Src, sdr.Dest)
 	}
 	if len(sdr.Dest) < 1 {
-		sds := dir.GetChildDir(sdr.Src)
-		sds = sliceExcept(sds, sdr.Src)
+		var dd dir.Dir
+		dd.Init(sdr.Src)
+		dd.ExceptFiles()
+		dd.ExceptSelf()
+		sds := dd.Member()
 		if len(sds) < 1 {
 			return "", fmt.Errorf("no subdirs to move")
 		}
@@ -96,7 +90,7 @@ func (sdr Sender) sendItems(paths []string, dest string) error {
 	showLabel("done", "successfully copied everything")
 	fes.Show()
 
-	if sdr.toTrash() {
+	if sdr.isDisposal() {
 		showLabel("done", "removed original items")
 		return fes.Remove()
 	}
