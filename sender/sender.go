@@ -10,11 +10,13 @@ import (
 	"github.com/AWtnb/go-asker"
 	"github.com/AWtnb/go-filesys"
 	"github.com/AWtnb/tablacus-fz-send/dir"
+	"github.com/fatih/color"
 	"github.com/ktr0731/go-fuzzyfinder"
 )
 
-func showLabel(heading string, s string) {
-	fmt.Printf("\n\n[%s] %s:\n\n", strings.ToUpper(heading), s)
+func finishLabel(message string) {
+	green := color.New(color.FgGreen).SprintFunc()
+	fmt.Printf("%s %s\n", green("[DONE]"), message)
 }
 
 var (
@@ -93,11 +95,11 @@ func (sdr Sender) sendItems(paths []string, dest string) error {
 	if err := fes.CopyTo(dest); err != nil {
 		return err
 	}
-	showLabel("done", "successfully copied everything")
+	finishLabel("successfully copied everything")
 	fes.Show()
 
 	if sdr.isDisposal() {
-		showLabel("done", "removed original items")
+		finishLabel("removed original items")
 		return fes.Remove()
 	}
 
@@ -126,6 +128,7 @@ func (sdr Sender) Send() error {
 		return err
 	}
 
-	showLabel("finished", "")
+	cyan := color.New(color.BgCyan)
+	cyan.Println("\n[FINISHED]")
 	return nil
 }

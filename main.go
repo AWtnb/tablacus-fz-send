@@ -9,6 +9,7 @@ import (
 
 	"github.com/AWtnb/tablacus-fz-send/dir"
 	"github.com/AWtnb/tablacus-fz-send/sender"
+	"github.com/fatih/color"
 	"github.com/ktr0731/go-fuzzyfinder"
 )
 
@@ -28,11 +29,16 @@ func main() {
 	os.Exit(run(src, dest, focus))
 }
 
+func warn(s string) {
+	color.Yellow(fmt.Sprintf("WARNING: %s\n", s))
+	fmt.Scanln()
+}
+
 func report(err error) {
 	if err == fuzzyfinder.ErrAbort {
 		return
 	}
-	fmt.Printf("ERROR: %s\n", err.Error())
+	color.Magenta(fmt.Sprintf("ERROR: %s\n", err.Error()))
 	fmt.Scanln()
 }
 
@@ -49,8 +55,7 @@ func run(src string, dest string, focus string) int {
 	err := s.Send()
 	if err != nil {
 		if err == sender.ErrNoSubDir {
-			fmt.Printf("WARNING: %s\n", err.Error())
-			fmt.Scanln()
+			warn(err.Error())
 			return 0
 		}
 		report(err)
