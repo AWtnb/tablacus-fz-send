@@ -3,6 +3,10 @@
 Command line tool for [Tablacus Explorer](https://tablacus.github.io/explorer.html).
 
 - List up files on specified directory (default: `Desktop`) and select with fuzzy-finder.
+- Copy / move selected item(s) to specified destination.
+
+
+![img](./diagram/diagram.png)
 
 ## Examples
 
