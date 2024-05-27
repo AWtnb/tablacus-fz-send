@@ -1,6 +1,7 @@
 package sender
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -15,6 +16,11 @@ import (
 func showLabel(heading string, s string) {
 	fmt.Printf("\n\n[%s] %s:\n\n", strings.ToUpper(heading), s)
 }
+
+var (
+	ErrNoSubDir    = errors.New("no subdir to move")
+	ErrInvalidDest = errors.New("invalid dest path")
+)
 
 type Sender struct {
 	Src   string
@@ -41,7 +47,7 @@ func (sdr Sender) DestPath() (string, error) {
 		return sdr.Dest, nil
 	}
 	if strings.Contains(sdr.Dest, string(os.PathSeparator)) {
-		return "", fmt.Errorf("invalid dest path")
+		return "", ErrInvalidDest
 	}
 	if sdr.isDisposal() {
 		return dir.Create(sdr.Src, sdr.Dest)
@@ -53,7 +59,7 @@ func (sdr Sender) DestPath() (string, error) {
 		dd.ExceptSelf()
 		sds := dd.Member()
 		if len(sds) < 1 {
-			return "", fmt.Errorf("no subdirs to move")
+			return "", ErrNoSubDir
 		}
 		idx, err := fuzzyfinder.Find(sds, func(i int) string {
 			return filepath.Base(sds[i])

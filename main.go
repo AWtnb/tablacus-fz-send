@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -37,16 +38,21 @@ func report(err error) {
 
 func run(src string, dest string, focus string) int {
 	if src == dest {
-		report(fmt.Errorf("src and dest path should be different"))
+		report(errors.New("src and dest path should be different"))
 		return 1
 	}
 	if src == ".." {
 		src = filepath.Dir(dest)
 	}
 
-	sender := sender.Sender{Src: src, Dest: dest, Focus: focus}
-	err := sender.Send()
+	s := sender.Sender{Src: src, Dest: dest, Focus: focus}
+	err := s.Send()
 	if err != nil {
+		if err == sender.ErrNoSubDir {
+			fmt.Printf("WARNING: %s\n", err.Error())
+			fmt.Scanln()
+			return 0
+		}
 		report(err)
 		return 1
 	}
