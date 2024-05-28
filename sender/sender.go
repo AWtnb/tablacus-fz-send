@@ -37,6 +37,9 @@ func (sdr Sender) isDisposal() bool {
 func (sdr Sender) Targets() ([]string, error) {
 	var d dir.Dir
 	d.Init(sdr.Src)
+	if fs, err := os.Stat(sdr.Dest); err == nil && fs.IsDir() {
+		d.Except(sdr.Dest)
+	}
 	q := ""
 	if 0 < len(sdr.Focus) {
 		q = filepath.Base(sdr.Focus)

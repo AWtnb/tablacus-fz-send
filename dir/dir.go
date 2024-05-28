@@ -72,14 +72,18 @@ func (d *Dir) Init(path string) {
 	d.member = getChildItem(d.path)
 }
 
-func (d *Dir) ExceptSelf() {
+func (d *Dir) Except(path string) {
 	paths := []string{}
 	for _, p := range d.member {
-		if p != d.path {
+		if p != path {
 			paths = append(paths, p)
 		}
 	}
 	d.member = paths
+}
+
+func (d *Dir) ExceptSelf() {
+	d.Except(d.path)
 }
 
 func (d *Dir) ExceptFiles() {
