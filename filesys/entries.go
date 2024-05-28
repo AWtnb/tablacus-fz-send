@@ -2,6 +2,8 @@ package filesys
 
 import (
 	"fmt"
+
+	"github.com/fatih/color"
 )
 
 type Entries struct {
@@ -47,14 +49,9 @@ func (es Entries) CopyTo(dest string) error {
 		if err := ent.CopyTo(dest); err != nil {
 			return err
 		}
+		fmt.Printf("==> %s %s\n", color.GreenString("Copied:"), ent.Name())
 	}
 	return nil
-}
-
-func (es Entries) Show() {
-	for i, ent := range es.entries {
-		fmt.Printf("(%d/%d) - '%s'\n", i+1, len(es.entries), ent.Name())
-	}
 }
 
 func (es Entries) Remove() error {
@@ -62,6 +59,7 @@ func (es Entries) Remove() error {
 		if err := ent.Remove(); err != nil {
 			return err
 		}
+		fmt.Printf("==> %s %s\n", color.MagentaString("Removed:"), ent.Name())
 	}
 	return nil
 }

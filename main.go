@@ -34,7 +34,7 @@ func warn(s string) {
 	fmt.Scanln()
 }
 
-func report(err error) {
+func reportError(err error) {
 	if err == fuzzyfinder.ErrAbort {
 		return
 	}
@@ -44,7 +44,7 @@ func report(err error) {
 
 func run(src string, dest string, focus string) int {
 	if src == dest {
-		report(errors.New("src and dest path should be different"))
+		reportError(errors.New("src and dest path should be different"))
 		return 1
 	}
 	if src == ".." {
@@ -54,14 +54,15 @@ func run(src string, dest string, focus string) int {
 	s := sender.Sender{Src: src, Dest: dest, Focus: focus}
 	err := s.Send()
 	if err != nil {
-		if err == sender.ErrNoSubDir {
+		if err == sender.ErrNoSubDir || err == dir.ErrNoItem {
 			warn(err.Error())
 			return 0
 		}
-		report(err)
+		reportError(err)
 		return 1
 	}
 
+	fmt.Printf("\n%s left item(s) on '%s':\n", color.CyanString("[FINISHED]"), src)
 	dir.Show(src)
 	fmt.Scanln()
 	return 0

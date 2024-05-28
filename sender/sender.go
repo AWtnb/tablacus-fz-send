@@ -14,11 +14,6 @@ import (
 	"github.com/ktr0731/go-fuzzyfinder"
 )
 
-func finishLabel(message string) {
-	green := color.New(color.FgGreen).SprintFunc()
-	fmt.Printf("%s %s\n", green("[DONE]"), message)
-}
-
 var (
 	ErrNoSubDir    = errors.New("no subdir to move")
 	ErrInvalidDest = errors.New("invalid dest path")
@@ -34,7 +29,7 @@ func (sdr Sender) isDisposal() bool {
 	return sdr.Dest == "_obsolete"
 }
 
-func (sdr Sender) Targets() ([]string, error) {
+func (sdr Sender) targets() ([]string, error) {
 	var d dir.Dir
 	d.Init(sdr.Src)
 	if fs, err := os.Stat(sdr.Dest); err == nil && fs.IsDir() {
@@ -47,7 +42,7 @@ func (sdr Sender) Targets() ([]string, error) {
 	return d.SelectItems(q)
 }
 
-func (sdr Sender) DestPath() (string, error) {
+func (sdr Sender) destPath() (string, error) {
 	if fs, err := os.Stat(sdr.Dest); err == nil && fs.IsDir() {
 		return sdr.Dest, nil
 	}
@@ -85,7 +80,7 @@ func (sdr Sender) sendItems(paths []string, dest string) error {
 	if 0 < len(dupls) {
 		for _, dp := range dupls {
 			a := asker.Asker{Accept: "y", Reject: "n"}
-			a.Ask(fmt.Sprintf("Name duplicated: '%s'\noverwrite?", filepath.Base(dp)))
+			a.Ask(fmt.Sprintf("Name duplicated: '%s'\nOverwrite?", color.GreenString(filepath.Base(dp))))
 			if !a.Accepted() {
 				fmt.Println("==> skipped")
 				fes.Exclude(dp)
@@ -98,16 +93,13 @@ func (sdr Sender) sendItems(paths []string, dest string) error {
 	if err := fes.CopyTo(dest); err != nil {
 		return err
 	}
-	finishLabel("successfully copied everything")
-	fes.Show()
 
 	if sdr.isDisposal() {
-		finishLabel("removed original items")
 		return fes.Remove()
 	}
 
 	a := asker.Asker{Accept: "y", Reject: "n"}
-	a.Ask("\n==> Delete original?")
+	a.Ask("Delete original?")
 	if a.Accepted() {
 		if err := fes.Remove(); err != nil {
 			return err
@@ -117,12 +109,12 @@ func (sdr Sender) sendItems(paths []string, dest string) error {
 }
 
 func (sdr Sender) Send() error {
-	t, err := sdr.Targets()
+	t, err := sdr.targets()
 	if err != nil {
 		return err
 	}
 
-	d, err := sdr.DestPath()
+	d, err := sdr.destPath()
 	if err != nil {
 		return err
 	}
@@ -131,7 +123,5 @@ func (sdr Sender) Send() error {
 		return err
 	}
 
-	cyan := color.New(color.BgCyan)
-	cyan.Println("\n[FINISHED]")
 	return nil
 }

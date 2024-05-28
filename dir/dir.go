@@ -1,14 +1,18 @@
 package dir
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/ktr0731/go-fuzzyfinder"
 )
+
+var ErrNoItem = errors.New("no item to send")
 
 func getChildItem(root string) (paths []string) {
 	fs, err := os.ReadDir(root)
@@ -28,16 +32,15 @@ func getChildItem(root string) (paths []string) {
 func Show(path string) {
 	left := getChildItem(path)
 	if len(left) < 1 {
-		fmt.Printf("No items on '%s'.\n", path)
+		fmt.Println("(empty)")
 		return
 	}
 	if len(left) == 1 {
-		fmt.Printf("Item on '%s':\n- '%s'\n", path, filepath.Base(left[0]))
+		fmt.Printf(" - '%s'\n", filepath.Base(left[0]))
 		return
 	}
-	fmt.Printf("Items on '%s':\n", path)
 	for i, l := range left {
-		fmt.Printf("(%d/%d) - '%s'\n", i+1, len(left), filepath.Base(l))
+		fmt.Printf("(%d/%d) - '%s'\n", i+1, len(left), color.YellowString(filepath.Base(l)))
 	}
 }
 
@@ -102,6 +105,7 @@ func (d Dir) Member() []string {
 
 func (d Dir) SelectItems(query string) (ps []string, err error) {
 	if len(d.member) < 1 {
+		err = ErrNoItem
 		return
 	}
 	idxs, err := fuzzyfinder.FindMulti(d.member, func(i int) string {
