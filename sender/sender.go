@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/AWtnb/go-asker"
-	"github.com/AWtnb/go-filesys"
 	"github.com/AWtnb/tablacus-fz-send/dir"
+	"github.com/AWtnb/tablacus-fz-send/filesys"
 	"github.com/fatih/color"
 	"github.com/ktr0731/go-fuzzyfinder"
 )
