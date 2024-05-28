@@ -10,6 +10,9 @@ Command line tool for [Tablacus Explorer](https://tablacus.github.io/explorer.ht
 
 ## Examples
 
+![img](./image.png)
+
+
 ### Fetch from desktop
 
 ```
