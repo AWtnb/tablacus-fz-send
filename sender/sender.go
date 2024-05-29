@@ -10,7 +10,6 @@ import (
 	"github.com/AWtnb/go-asker"
 	"github.com/AWtnb/tablacus-fz-send/dir"
 	"github.com/AWtnb/tablacus-fz-send/filesys"
-	"github.com/fatih/color"
 	"github.com/ktr0731/go-fuzzyfinder"
 )
 
@@ -80,7 +79,8 @@ func (sdr Sender) sendItems(paths []string, dest string) error {
 	if 0 < len(dupls) {
 		for _, dp := range dupls {
 			a := asker.Asker{Accept: "y", Reject: "n"}
-			a.Ask(fmt.Sprintf("Name duplicated: '%s'\nOverwrite?", color.GreenString(filepath.Base(dp))))
+			e := filesys.Entry{Path: dp}
+			a.Ask(fmt.Sprintf("Name duplicated: %s\nOverwrite?", e.DecoName()))
 			if !a.Accepted() {
 				fmt.Println("==> skipped")
 				fes.Exclude(dp)
