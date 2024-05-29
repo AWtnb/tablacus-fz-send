@@ -111,7 +111,12 @@ func (d Dir) SelectItems(query string) (ps []string, err error) {
 		return
 	}
 	idxs, err := fuzzyfinder.FindMulti(d.member, func(i int) string {
-		return filepath.Base(d.member[i])
+		p := d.member[i]
+		b := filepath.Base(p)
+		if fs, err := os.Stat(p); err == nil && fs.IsDir() {
+			return fmt.Sprintf("%s \U0001F4C1", b)
+		}
+		return filepath.Base(b)
 	}, fuzzyfinder.WithCursorPosition(fuzzyfinder.CursorPositionTop), fuzzyfinder.WithQuery(query))
 	if err != nil {
 		return
