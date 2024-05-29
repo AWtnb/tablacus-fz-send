@@ -46,20 +46,22 @@ func (es *Entries) Exclude(path string) {
 
 func (es Entries) CopyTo(dest string) error {
 	for _, ent := range es.entries {
+		d := ent.DecoName(false)
 		if err := ent.CopyTo(dest); err != nil {
 			return err
 		}
-		fmt.Printf("==> %s %s\n", color.GreenString("Copied:"), ent.Name())
+		fmt.Printf("- %s ==> %s\n", d, color.GreenString("Copied"))
 	}
 	return nil
 }
 
 func (es Entries) Remove() error {
 	for _, ent := range es.entries {
+		d := ent.DecoName(true)
 		if err := ent.Remove(); err != nil {
 			return err
 		}
-		fmt.Printf("==> %s %s\n", color.MagentaString("Removed:"), ent.Name())
+		fmt.Printf("- %s ==> %s\n", d, color.MagentaString("Deleted"))
 	}
 	return nil
 }

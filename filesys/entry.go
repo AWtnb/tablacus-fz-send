@@ -1,11 +1,13 @@
 package filesys
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 
 	"github.com/AWtnb/go-dircopy"
+	"github.com/fatih/color"
 )
 
 func copyFile(src string, newPath string) error {
@@ -31,6 +33,22 @@ type Entry struct {
 
 func (e Entry) Name() string {
 	return filepath.Base(e.Path)
+}
+
+func (e Entry) DecoName(full bool) string {
+	b := filepath.Base(e.Path)
+	var d string
+	if full {
+		d = filepath.Dir(e.Path) + string(os.PathSeparator)
+	}
+	fs, err := os.Stat(e.Path)
+	if err != nil {
+		return fmt.Sprintf("'%s' (non-exists)", b)
+	}
+	if fs.IsDir() {
+		return fmt.Sprintf("'%s%s' \U0001F4C1", color.HiBlackString(d), color.YellowString(b))
+	}
+	return fmt.Sprintf("'%s%s'", color.HiBlackString(d), color.CyanString(b))
 }
 
 func (e Entry) isDir() bool {

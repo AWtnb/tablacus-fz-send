@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/fatih/color"
+	"github.com/AWtnb/tablacus-fz-send/filesys"
 	"github.com/ktr0731/go-fuzzyfinder"
 )
 
@@ -36,11 +36,13 @@ func Show(path string) {
 		return
 	}
 	if len(left) == 1 {
-		fmt.Printf(" - '%s'\n", filepath.Base(left[0]))
+		e := filesys.Entry{Path: left[0]}
+		fmt.Printf(" - %s\n", e.DecoName(false))
 		return
 	}
 	for i, l := range left {
-		fmt.Printf("(%d/%d) - '%s'\n", i+1, len(left), color.YellowString(filepath.Base(l)))
+		e := filesys.Entry{Path: l}
+		fmt.Printf("(%d/%d) - %s\n", i+1, len(left), e.DecoName(false))
 	}
 }
 
