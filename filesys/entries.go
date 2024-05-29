@@ -2,6 +2,7 @@ package filesys
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"github.com/fatih/color"
 )
@@ -46,7 +47,7 @@ func (es *Entries) Exclude(path string) {
 
 func (es Entries) CopyTo(dest string) error {
 	for _, ent := range es.entries {
-		d := ent.DecoName(false)
+		d := ent.DecoName()
 		if err := ent.CopyTo(dest); err != nil {
 			return err
 		}
@@ -57,11 +58,11 @@ func (es Entries) CopyTo(dest string) error {
 
 func (es Entries) Remove() error {
 	for _, ent := range es.entries {
-		d := ent.DecoName(true)
+		d := ent.DecoName()
 		if err := ent.Remove(); err != nil {
 			return err
 		}
-		fmt.Printf("- %s ==> %s\n", d, color.HiMagentaString("Deleted"))
+		fmt.Printf("- %s ==> %s from '%s'\n", d, color.HiMagentaString("Deleted"), filepath.Dir(ent.Path))
 	}
 	return nil
 }

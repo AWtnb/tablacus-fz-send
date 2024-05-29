@@ -37,12 +37,12 @@ func Show(path string) {
 	}
 	if len(left) == 1 {
 		e := filesys.Entry{Path: left[0]}
-		fmt.Printf(" - %s\n", e.DecoName(false))
+		fmt.Printf(" - %s\n", e.DecoName())
 		return
 	}
 	for i, l := range left {
 		e := filesys.Entry{Path: l}
-		fmt.Printf("(%d/%d) - %s\n", i+1, len(left), e.DecoName(false))
+		fmt.Printf("(%d/%d) - %s\n", i+1, len(left), e.DecoName())
 	}
 }
 
