@@ -46,9 +46,9 @@ func (e Entry) DecoName(full bool) string {
 		return fmt.Sprintf("'%s' (non-exists)", b)
 	}
 	if fs.IsDir() {
-		return fmt.Sprintf("'%s%s' \U0001F4C1", color.HiBlackString(d), color.YellowString(b))
+		return fmt.Sprintf("'%s%s' \U0001F4C1", d, color.YellowString(b))
 	}
-	return fmt.Sprintf("'%s%s'", color.HiBlackString(d), color.CyanString(b))
+	return fmt.Sprintf("'%s%s'", d, color.CyanString(b))
 }
 
 func (e Entry) isDir() bool {

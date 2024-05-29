@@ -50,7 +50,7 @@ func (es Entries) CopyTo(dest string) error {
 		if err := ent.CopyTo(dest); err != nil {
 			return err
 		}
-		fmt.Printf("- %s ==> %s\n", d, color.GreenString("Copied"))
+		fmt.Printf("- %s ==> %s to '%s'\n", d, color.GreenString("Copied"), dest)
 	}
 	return nil
 }
@@ -61,7 +61,7 @@ func (es Entries) Remove() error {
 		if err := ent.Remove(); err != nil {
 			return err
 		}
-		fmt.Printf("- %s ==> %s\n", d, color.MagentaString("Deleted"))
+		fmt.Printf("- %s ==> %s\n", d, color.HiMagentaString("Deleted"))
 	}
 	return nil
 }

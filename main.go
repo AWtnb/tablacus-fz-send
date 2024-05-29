@@ -62,7 +62,7 @@ func run(src string, dest string, focus string) int {
 		return 1
 	}
 
-	fmt.Printf("\n%s left item(s) on '%s':\n", color.CyanString("[FINISHED]"), src)
+	fmt.Printf("\n==> Finished!\nLeft item(s) on '%s':\n", src)
 	dir.Show(src)
 	fmt.Scanln()
 	return 0
