@@ -1,6 +1,7 @@
 package filesys
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -11,6 +12,9 @@ import (
 )
 
 func copyFile(src string, newPath string) error {
+	if src == newPath {
+		return errors.New("src and dest are the same path")
+	}
 	sf, err := os.Open(src)
 	if err != nil {
 		return err

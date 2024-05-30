@@ -15,9 +15,9 @@ import (
 
 var ErrNoItem = errors.New("no item to send")
 
-func getChildItem(root string, all bool) (paths []string) {
+func getChildItem(root string, depth int, all bool) (paths []string) {
 	var d walk.Dir
-	d.Init(root, all, -1, "")
+	d.Init(root, all, depth, "")
 	found, err := d.GetChildItem()
 	if err != nil {
 		return
@@ -33,21 +33,21 @@ func getChildItem(root string, all bool) (paths []string) {
 }
 
 func Show(path string) {
-	left := getChildItem(path, true)
+	left := getChildItem(path, 1, true)
 	if len(left) < 1 {
 		fmt.Printf("('%s' is empty)\n", path)
 		return
 	}
 	if len(left) == 1 {
-		p := left[0]
-		e := filesys.Entry{Path: p}
-		fmt.Printf(" - %s%s%s is left\n", filepath.Dir(p), string(os.PathSeparator), e.DecoName())
+		fmt.Printf("Left item on '%s':\n", path)
+		e := filesys.Entry{Path: left[0]}
+		fmt.Printf(" - %s\n", e.DecoName())
 		return
 	}
-	fmt.Println("Left items:")
-	for _, p := range left {
+	fmt.Printf("Left items on '%s':\n", path)
+	for i, p := range left {
 		e := filesys.Entry{Path: p}
-		fmt.Printf(" - %s%s%s\n", filepath.Dir(p), string(os.PathSeparator), e.DecoName())
+		fmt.Printf("(%d/%d) - %s\n", i+1, len(left), e.DecoName())
 	}
 }
 
@@ -79,7 +79,7 @@ type Dir struct {
 
 func (d *Dir) Init(path string, all bool) {
 	d.path = path
-	d.member = getChildItem(d.path, all)
+	d.member = getChildItem(d.path, -1, all)
 }
 
 func (d *Dir) Except(path string) {
