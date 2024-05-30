@@ -8,41 +8,46 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/AWtnb/go-walk"
 	"github.com/AWtnb/tablacus-fz-send/filesys"
 	"github.com/ktr0731/go-fuzzyfinder"
 )
 
 var ErrNoItem = errors.New("no item to send")
 
-func getChildItem(root string) (paths []string) {
-	fs, err := os.ReadDir(root)
+func getChildItem(root string, all bool) (paths []string) {
+	var d walk.Dir
+	d.Init(root, all, -1, "")
+	found, err := d.GetChildItem()
 	if err != nil {
 		return
 	}
-	for _, f := range fs {
-		if strings.HasSuffix(f.Name(), ".ini") || strings.HasPrefix(f.Name(), "~$") {
+	for _, f := range found {
+		n := filepath.Base(f)
+		if f == root || strings.HasSuffix(n, ".ini") || strings.HasPrefix(n, "~$") {
 			continue
 		}
-		p := filepath.Join(root, f.Name())
-		paths = append(paths, p)
+		paths = append(paths, f)
 	}
 	return
 }
 
 func Show(path string) {
-	left := getChildItem(path)
+	left := getChildItem(path, true)
 	if len(left) < 1 {
-		fmt.Println("(empty)")
+		fmt.Printf("('%s' is empty)\n", path)
 		return
 	}
 	if len(left) == 1 {
-		e := filesys.Entry{Path: left[0]}
-		fmt.Printf(" - %s\n", e.DecoName())
+		p := left[0]
+		e := filesys.Entry{Path: p}
+		fmt.Printf(" - %s%s%s is left\n", filepath.Dir(p), string(os.PathSeparator), e.DecoName())
 		return
 	}
-	for i, l := range left {
-		e := filesys.Entry{Path: l}
-		fmt.Printf("(%d/%d) - %s\n", i+1, len(left), e.DecoName())
+	fmt.Println("Left items:")
+	for _, p := range left {
+		e := filesys.Entry{Path: p}
+		fmt.Printf(" - %s%s%s\n", filepath.Dir(p), string(os.PathSeparator), e.DecoName())
 	}
 }
 
@@ -72,29 +77,15 @@ type Dir struct {
 	member []string
 }
 
-func (d *Dir) Init(path string) {
+func (d *Dir) Init(path string, all bool) {
 	d.path = path
-	d.member = getChildItem(d.path)
+	d.member = getChildItem(d.path, all)
 }
 
 func (d *Dir) Except(path string) {
 	paths := []string{}
 	for _, p := range d.member {
 		if p != path {
-			paths = append(paths, p)
-		}
-	}
-	d.member = paths
-}
-
-func (d *Dir) ExceptSelf() {
-	d.Except(d.path)
-}
-
-func (d *Dir) ExceptFiles() {
-	paths := []string{}
-	for _, p := range d.member {
-		if fs, err := os.Stat(p); err == nil && fs.IsDir() {
 			paths = append(paths, p)
 		}
 	}
@@ -112,11 +103,11 @@ func (d Dir) SelectItems(query string) (ps []string, err error) {
 	}
 	idxs, err := fuzzyfinder.FindMulti(d.member, func(i int) string {
 		p := d.member[i]
-		b := filepath.Base(p)
+		rel, _ := filepath.Rel(d.path, p)
 		if fs, err := os.Stat(p); err == nil && fs.IsDir() {
-			return fmt.Sprintf("%s \U0001F4C1", b)
+			return fmt.Sprintf("%s \U0001F4C1", rel)
 		}
-		return filepath.Base(b)
+		return rel
 	}, fuzzyfinder.WithCursorPosition(fuzzyfinder.CursorPositionTop), fuzzyfinder.WithQuery(query))
 	if err != nil {
 		return

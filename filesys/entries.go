@@ -2,10 +2,17 @@ package filesys
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 
 	"github.com/fatih/color"
 )
+
+func getDepth(path string) int {
+	return len(strings.Split(path, string(os.PathSeparator)))
+}
 
 type Entries struct {
 	entries []Entry
@@ -45,19 +52,27 @@ func (es *Entries) Exclude(path string) {
 	es.entries = ents
 }
 
-func (es Entries) CopyTo(dest string) error {
+func (es Entries) Sorted() []Entry {
+	ss := es.entries
+	sort.Slice(ss, func(i, j int) bool {
+		return getDepth(ss[i].Path) > getDepth(ss[j].Path)
+	})
+	return ss
+}
+
+func (es Entries) Copy(src string, dest string) error {
 	for _, ent := range es.entries {
 		d := ent.DecoName()
 		if err := ent.CopyTo(dest); err != nil {
 			return err
 		}
-		fmt.Printf("- %s ==> %s to '%s'\n", d, color.GreenString("Copied"), dest)
+		fmt.Printf("- %s%s%s ==> %s to '%s'\n", filepath.Dir(ent.Path), string(os.PathSeparator), d, color.GreenString("Copied"), dest)
 	}
 	return nil
 }
 
-func (es Entries) Remove() error {
-	for _, ent := range es.entries {
+func (es Entries) Remove(from string) error {
+	for _, ent := range es.Sorted() {
 		d := ent.DecoName()
 		if err := ent.Remove(); err != nil {
 			return err

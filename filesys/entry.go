@@ -39,12 +39,12 @@ func (e Entry) DecoName() string {
 	b := filepath.Base(e.Path)
 	fs, err := os.Stat(e.Path)
 	if err != nil {
-		return fmt.Sprintf("'%s' (non-exists)", b)
+		return fmt.Sprintf("%s (non-exists)", b)
 	}
 	if fs.IsDir() {
-		return fmt.Sprintf("'%s' \U0001F4C1", color.YellowString(b))
+		return fmt.Sprintf("%s \U0001F4C1", color.YellowString(b))
 	}
-	return fmt.Sprintf("'%s'", color.CyanString(b))
+	return color.CyanString(b)
 }
 
 func (e Entry) isDir() bool {
@@ -56,8 +56,8 @@ func (e Entry) reborn(dest string) string {
 	return filepath.Join(dest, filepath.Base(e.Path))
 }
 
-func (e Entry) ExistsOn(dirPath string) bool {
-	p := e.reborn(dirPath)
+func (e Entry) ExistsOn(dest string) bool {
+	p := e.reborn(dest)
 	_, err := os.Stat(p)
 	return err == nil
 }

@@ -30,7 +30,7 @@ func (sdr Sender) isDisposal() bool {
 
 func (sdr Sender) targets() ([]string, error) {
 	var d dir.Dir
-	d.Init(sdr.Src)
+	d.Init(sdr.Src, true)
 	if fs, err := os.Stat(sdr.Dest); err == nil && fs.IsDir() {
 		d.Except(sdr.Dest)
 	}
@@ -53,21 +53,17 @@ func (sdr Sender) destPath() (string, error) {
 	}
 	if len(sdr.Dest) < 1 {
 		var dd dir.Dir
-		dd.Init(sdr.Src)
-		dd.ExceptFiles()
-		dd.ExceptSelf()
+		dd.Init(sdr.Src, false)
 		sds := dd.Member()
 		if len(sds) < 1 {
 			return "", ErrNoSubDir
 		}
 		idx, err := fuzzyfinder.Find(sds, func(i int) string {
-			return filepath.Base(sds[i])
+			p := sds[i]
+			rel, _ := filepath.Rel(sdr.Src, p)
+			return filepath.Base(rel)
 		})
 		return sds[idx], err
-	}
-	p := filepath.Join(sdr.Src, sdr.Dest)
-	if fs, err := os.Stat(p); err == nil && fs.IsDir() {
-		return p, nil
 	}
 	return dir.Create(sdr.Src, sdr.Dest)
 }
@@ -76,32 +72,30 @@ func (sdr Sender) sendItems(paths []string, dest string) error {
 	var fes filesys.Entries
 	fes.RegisterMulti(paths)
 	dupls := fes.UnMovable(dest)
-	if 0 < len(dupls) {
-		for _, dp := range dupls {
-			a := asker.Asker{Accept: "y", Reject: "n"}
-			e := filesys.Entry{Path: dp}
-			a.Ask(fmt.Sprintf("Name duplicated: %s\nOverwrite?", e.DecoName()))
-			if !a.Accepted() {
-				fmt.Println("==> skipped")
-				fes.Exclude(dp)
-			}
+	for _, dp := range dupls {
+		a := asker.Asker{Accept: "y", Reject: "n"}
+		e := filesys.Entry{Path: dp}
+		a.Ask(fmt.Sprintf("Name duplicated: %s\nOverwrite?", e.DecoName()))
+		if !a.Accepted() {
+			fmt.Println("==> skipped")
+			fes.Exclude(dp)
 		}
 	}
 	if fes.Size() < 1 {
 		return nil
 	}
-	if err := fes.CopyTo(dest); err != nil {
+	if err := fes.Copy(sdr.Src, dest); err != nil {
 		return err
 	}
 
 	if sdr.isDisposal() {
-		return fes.Remove()
+		return fes.Remove(sdr.Src)
 	}
 
 	a := asker.Asker{Accept: "y", Reject: "n"}
 	a.Ask("Delete original?")
 	if a.Accepted() {
-		if err := fes.Remove(); err != nil {
+		if err := fes.Remove(sdr.Src); err != nil {
 			return err
 		}
 	}
@@ -109,7 +103,7 @@ func (sdr Sender) sendItems(paths []string, dest string) error {
 }
 
 func (sdr Sender) Send() error {
-	t, err := sdr.targets()
+	ts, err := sdr.targets()
 	if err != nil {
 		return err
 	}
@@ -119,7 +113,7 @@ func (sdr Sender) Send() error {
 		return err
 	}
 
-	if err := sdr.sendItems(t, d); err != nil {
+	if err := sdr.sendItems(ts, d); err != nil {
 		return err
 	}
 
