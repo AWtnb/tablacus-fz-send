@@ -62,7 +62,6 @@ func run(src string, dest string, focus string) int {
 		return 1
 	}
 
-	fmt.Println("\n==> Finished!")
 	dir.Show(src)
 	fmt.Scanln()
 	return 0

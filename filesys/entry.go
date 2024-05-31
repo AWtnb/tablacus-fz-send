@@ -48,11 +48,11 @@ func (e Entry) DecoName() string {
 	}
 	if fs.IsDir() {
 		c := color.New(color.BgYellow, color.FgBlack)
-		return fmt.Sprintf("%s %s", c.Sprint(b), color.YellowString("\U0001F4C1"))
+		return c.Sprint(b) + color.YellowString("\U0001F4C1")
 	}
 	x := filepath.Ext(b)
 	n := strings.TrimSuffix(b, x)
-	return n + color.YellowString(x)
+	return color.YellowString(n) + color.HiYellowString(x)
 }
 
 func (e Entry) isDir() bool {

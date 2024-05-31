@@ -77,7 +77,7 @@ func (sdr Sender) sendItems(paths []string, dest string) error {
 		e := filesys.Entry{Path: dp}
 		a.Ask(fmt.Sprintf("Name duplicated: %s\nOverwrite?", e.DecoName()))
 		if !a.Accepted() {
-			fmt.Println("==> skipped")
+			fmt.Println("==> Skipped")
 			fes.Exclude(dp)
 		}
 	}

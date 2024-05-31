@@ -62,22 +62,22 @@ func (es Entries) Sorted() []Entry {
 
 func (es Entries) Copy(src string, dest string) error {
 	for _, ent := range es.entries {
-		d := ent.DecoName()
+		de := Entry{Path: dest}
+		fmt.Printf("- %s %s%s%s to %s\n", color.GreenString("Coping"), filepath.Dir(ent.Path), string(os.PathSeparator), ent.DecoName(), de.DecoName())
 		if err := ent.CopyTo(dest); err != nil {
 			return err
 		}
-		fmt.Printf("- %s%s%s ==> %s to '%s'\n", filepath.Dir(ent.Path), string(os.PathSeparator), d, color.GreenString("Copied"), dest)
 	}
 	return nil
 }
 
 func (es Entries) Remove(from string) error {
 	for _, ent := range es.Sorted() {
-		d := ent.DecoName()
+		pe := Entry{Path: filepath.Dir(ent.Path)}
+		fmt.Printf("- %s %s from %s\n", color.HiMagentaString("Deleting"), ent.DecoName(), pe.DecoName())
 		if err := ent.Remove(); err != nil {
 			return err
 		}
-		fmt.Printf("- %s ==> %s from '%s'\n", d, color.HiMagentaString("Deleted"), filepath.Dir(ent.Path))
 	}
 	return nil
 }
