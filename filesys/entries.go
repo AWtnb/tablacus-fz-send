@@ -3,11 +3,8 @@ package filesys
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"sort"
 	"strings"
-
-	"github.com/fatih/color"
 )
 
 func getDepth(path string) int {
@@ -60,10 +57,10 @@ func (es Entries) Sorted() []Entry {
 	return ss
 }
 
-func (es Entries) Copy(src string, dest string) error {
+func (es Entries) Copy(dest string) error {
 	for _, ent := range es.entries {
 		de := Entry{Path: dest}
-		fmt.Printf("- %s %s%s%s to %s\n", color.GreenString("Coping"), filepath.Dir(ent.Path), string(os.PathSeparator), ent.DecoName(), de.DecoName())
+		fmt.Printf("- Coping to %s: %s%s\n", de.DecoName(), ent.DecoRelPath(), ent.DecoName())
 		if err := ent.CopyTo(dest); err != nil {
 			return err
 		}
@@ -71,10 +68,9 @@ func (es Entries) Copy(src string, dest string) error {
 	return nil
 }
 
-func (es Entries) Remove(from string) error {
+func (es Entries) Remove() error {
 	for _, ent := range es.Sorted() {
-		pe := Entry{Path: filepath.Dir(ent.Path)}
-		fmt.Printf("- %s %s from %s\n", color.HiMagentaString("Deleting"), ent.DecoName(), pe.DecoName())
+		fmt.Printf("- Deleting: %s%s\n", ent.DecoRelPath(), ent.DecoName())
 		if err := ent.Remove(); err != nil {
 			return err
 		}

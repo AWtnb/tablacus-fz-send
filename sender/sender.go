@@ -75,7 +75,8 @@ func (sdr Sender) sendItems(paths []string, dest string) error {
 	for _, dp := range dupls {
 		a := asker.Asker{Accept: "y", Reject: "n"}
 		e := filesys.Entry{Path: dp}
-		a.Ask(fmt.Sprintf("Name duplicated: %s\nOverwrite?", e.DecoName()))
+		d := filesys.Entry{Path: dest}
+		a.Ask(fmt.Sprintf("Name duplicated: %s in %s\nOverwrite?", e.DecoName(), d.DecoName()))
 		if !a.Accepted() {
 			fmt.Println("==> Skipped")
 			fes.Exclude(dp)
@@ -84,18 +85,18 @@ func (sdr Sender) sendItems(paths []string, dest string) error {
 	if fes.Size() < 1 {
 		return nil
 	}
-	if err := fes.Copy(sdr.Src, dest); err != nil {
+	if err := fes.Copy(dest); err != nil {
 		return err
 	}
 
 	if sdr.isDisposal() {
-		return fes.Remove(sdr.Src)
+		return fes.Remove()
 	}
 
 	a := asker.Asker{Accept: "y", Reject: "n"}
 	a.Ask("Delete original?")
 	if a.Accepted() {
-		if err := fes.Remove(sdr.Src); err != nil {
+		if err := fes.Remove(); err != nil {
 			return err
 		}
 	}

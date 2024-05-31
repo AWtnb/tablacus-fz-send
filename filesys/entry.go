@@ -40,6 +40,13 @@ func (e Entry) Name() string {
 	return filepath.Base(e.Path)
 }
 
+func (e Entry) DecoRelPath() string {
+	base := filepath.Dir(filepath.Dir(e.Path))
+	rel, _ := filepath.Rel(base, e.Path)
+	c := strings.TrimSuffix(rel, e.Name())
+	return color.HiBlackString(c)
+}
+
 func (e Entry) DecoName() string {
 	b := filepath.Base(e.Path)
 	fs, err := os.Stat(e.Path)
@@ -52,7 +59,7 @@ func (e Entry) DecoName() string {
 	}
 	x := filepath.Ext(b)
 	n := strings.TrimSuffix(b, x)
-	return color.YellowString(n) + color.HiYellowString(x)
+	return color.CyanString(n) + x
 }
 
 func (e Entry) isDir() bool {

@@ -34,18 +34,19 @@ func getChildItem(root string, depth int, all bool) (paths []string) {
 
 func Show(path string) {
 	pe := filesys.Entry{Path: path}
+	dp := pe.DecoName()
 	left := getChildItem(path, 1, true)
 	if len(left) < 1 {
-		fmt.Printf("(now %s is empty)\n", pe.DecoName())
+		fmt.Printf("(now %s is empty)\n", dp)
 		return
 	}
 	if len(left) == 1 {
-		fmt.Printf("Left item on %s:\n", pe.DecoName())
+		fmt.Printf("Left item on %s:\n", dp)
 		e := filesys.Entry{Path: left[0]}
 		fmt.Printf(" - %s\n", e.DecoName())
 		return
 	}
-	fmt.Printf("Left items on %s:\n", pe.DecoName())
+	fmt.Printf("Left items on %s:\n", dp)
 	for i, p := range left {
 		e := filesys.Entry{Path: p}
 		fmt.Printf("(%d/%d) - %s\n", i+1, len(left), e.DecoName())
