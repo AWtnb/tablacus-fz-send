@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/AWtnb/go-dircopy"
 	"github.com/fatih/color"
@@ -46,9 +47,12 @@ func (e Entry) DecoName() string {
 		return fmt.Sprintf("%s (non-exists)", b)
 	}
 	if fs.IsDir() {
-		return fmt.Sprintf("%s \U0001F4C1", color.YellowString(b))
+		c := color.New(color.BgYellow, color.FgBlack)
+		return fmt.Sprintf("%s %s", c.Sprint(b), color.YellowString("\U0001F4C1"))
 	}
-	return color.CyanString(b)
+	x := filepath.Ext(b)
+	n := strings.TrimSuffix(b, x)
+	return n + color.YellowString(x)
 }
 
 func (e Entry) isDir() bool {
