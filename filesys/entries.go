@@ -58,9 +58,9 @@ func (es Entries) Sorted() []Entry {
 }
 
 func (es Entries) Copy(dest string) error {
-	for _, ent := range es.entries {
+	for i, ent := range es.entries {
 		de := Entry{Path: dest}
-		fmt.Printf("- Coping to %s: %s%s\n", de.DecoName(), ent.DecoRelPath(), ent.DecoName())
+		fmt.Printf("- (%d/%d) Coping to %s: %s%s\n", i+1, len(es.entries), de.DecoName(), ent.DecoRelPath(), ent.DecoName())
 		if err := ent.CopyTo(dest); err != nil {
 			return err
 		}
@@ -69,8 +69,8 @@ func (es Entries) Copy(dest string) error {
 }
 
 func (es Entries) Remove() error {
-	for _, ent := range es.Sorted() {
-		fmt.Printf("- Deleting: %s%s\n", ent.DecoRelPath(), ent.DecoName())
+	for i, ent := range es.Sorted() {
+		fmt.Printf("- (%d/%d) Deleting: %s%s\n", i+1, len(es.entries), ent.DecoRelPath(), ent.DecoName())
 		if err := ent.Remove(); err != nil {
 			return err
 		}
