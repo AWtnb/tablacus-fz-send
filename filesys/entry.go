@@ -40,9 +40,9 @@ func (e Entry) Name() string {
 	return filepath.Base(e.Path)
 }
 
-func (e Entry) DecoRelPath() string {
-	base := filepath.Dir(filepath.Dir(e.Path))
-	rel, _ := filepath.Rel(base, e.Path)
+func (e Entry) DecoRelPath(base string) string {
+	b := filepath.Dir(base)
+	rel, _ := filepath.Rel(b, e.Path)
 	c := strings.TrimSuffix(rel, e.Name())
 	return color.HiBlackString(c)
 }

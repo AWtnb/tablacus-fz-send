@@ -35,12 +35,12 @@ Command line tool for [Tablacus Explorer](https://tablacus.github.io/explorer.ht
 ### Send to subfolder
 
 ```
-%USERPROFILE%\Personal\tools\bin\tablacus-fz-send.exe -src=%Current% -focus=%Selected%
+%USERPROFILE%\Personal\tools\bin\tablacus-fz-send.exe -src=%Current%
 ```
 
 ### Send to trash (`_obsolete`)
 
 ```
-%USERPROFILE%\Personal\tools\bin\tablacus-fz-send.exe -src=%Current% -dest=_obsolete -focus=%Selected%
+%USERPROFILE%\Personal\tools\bin\tablacus-fz-send.exe -src=%Current% -dest=_obsolete
 ```
 

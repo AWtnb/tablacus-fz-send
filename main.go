@@ -15,18 +15,16 @@ import (
 
 func main() {
 	var (
-		src   string
-		dest  string
-		focus string
+		src  string
+		dest string
 	)
 	flag.StringVar(&src, "src", "", "location of items to copy or move")
 	flag.StringVar(&dest, "dest", "", "destination to copy or move")
-	flag.StringVar(&focus, "focus", "", "path of currently focusing item")
 	flag.Parse()
 	if len(src) < 1 {
 		src = os.ExpandEnv(`C:\Users\${USERNAME}\Desktop`)
 	}
-	os.Exit(run(src, dest, focus))
+	os.Exit(run(src, dest))
 }
 
 func warn(s string) {
@@ -42,7 +40,7 @@ func reportError(err error) {
 	fmt.Scanln()
 }
 
-func run(src string, dest string, focus string) int {
+func run(src string, dest string) int {
 	if src == dest {
 		reportError(errors.New("src and dest path should be different"))
 		return 1
@@ -51,7 +49,7 @@ func run(src string, dest string, focus string) int {
 		src = filepath.Dir(dest)
 	}
 
-	s := sender.Sender{Src: src, Dest: dest, Focus: focus}
+	s := sender.Sender{Src: src, Dest: dest}
 	err := s.Send()
 	if err != nil {
 		if err == sender.ErrNoSubDir || err == dir.ErrNoItem {

@@ -3,6 +3,7 @@ package filesys
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -49,18 +50,21 @@ func (es *Entries) Exclude(path string) {
 	es.entries = ents
 }
 
-func (es Entries) Sorted() []Entry {
+func (es Entries) sorted() []Entry {
 	ss := es.entries
 	sort.Slice(ss, func(i, j int) bool {
+		return filepath.Base(ss[i].Path) < filepath.Base(ss[j].Path)
+	})
+	sort.SliceStable(ss, func(i, j int) bool {
 		return getDepth(ss[i].Path) > getDepth(ss[j].Path)
 	})
 	return ss
 }
 
-func (es Entries) Copy(dest string) error {
-	for i, ent := range es.entries {
+func (es Entries) Copy(src string, dest string) error {
+	for i, ent := range es.sorted() {
 		de := Entry{Path: dest}
-		fmt.Printf("- (%d/%d) Coping to %s: %s%s\n", i+1, len(es.entries), de.DecoName(), ent.DecoRelPath(), ent.DecoName())
+		fmt.Printf("- (%02d/%02d) Coping to %s: %s%s\n", i+1, len(es.entries), de.DecoName(), ent.DecoRelPath(src), ent.DecoName())
 		if err := ent.CopyTo(dest); err != nil {
 			return err
 		}
@@ -68,9 +72,9 @@ func (es Entries) Copy(dest string) error {
 	return nil
 }
 
-func (es Entries) Remove() error {
-	for i, ent := range es.Sorted() {
-		fmt.Printf("- (%d/%d) Deleting: %s%s\n", i+1, len(es.entries), ent.DecoRelPath(), ent.DecoName())
+func (es Entries) Remove(from string) error {
+	for i, ent := range es.sorted() {
+		fmt.Printf("- (%02d/%02d) Deleting: %s%s\n", i+1, len(es.entries), ent.DecoRelPath(from), ent.DecoName())
 		if err := ent.Remove(); err != nil {
 			return err
 		}

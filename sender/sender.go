@@ -19,9 +19,8 @@ var (
 )
 
 type Sender struct {
-	Src   string
-	Dest  string
-	Focus string
+	Src  string
+	Dest string
 }
 
 func (sdr Sender) isDisposal() bool {
@@ -34,11 +33,8 @@ func (sdr Sender) targets() ([]string, error) {
 	if fs, err := os.Stat(sdr.Dest); err == nil && fs.IsDir() {
 		d.Except(sdr.Dest)
 	}
-	q := ""
-	if 0 < len(sdr.Focus) {
-		q = filepath.Base(sdr.Focus)
-	}
-	return d.SelectItems(q)
+	d.ExceptDir()
+	return d.SelectItems()
 }
 
 func (sdr Sender) destPath() (string, error) {
@@ -85,18 +81,18 @@ func (sdr Sender) sendItems(paths []string, dest string) error {
 	if fes.Size() < 1 {
 		return nil
 	}
-	if err := fes.Copy(dest); err != nil {
+	if err := fes.Copy(sdr.Src, dest); err != nil {
 		return err
 	}
 
 	if sdr.isDisposal() {
-		return fes.Remove()
+		return fes.Remove(sdr.Src)
 	}
 
 	a := asker.Asker{Accept: "y", Reject: "n"}
 	a.Ask("Delete original?")
 	if a.Accepted() {
-		if err := fes.Remove(); err != nil {
+		if err := fes.Remove(sdr.Src); err != nil {
 			return err
 		}
 	}

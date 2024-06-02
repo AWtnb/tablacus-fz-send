@@ -49,7 +49,7 @@ func Show(path string) {
 	fmt.Printf("Left items on %s:\n", dp)
 	for i, p := range left {
 		e := filesys.Entry{Path: p}
-		fmt.Printf("(%d/%d) - %s\n", i+1, len(left), e.DecoName())
+		fmt.Printf("(%02d/%02d) - %s\n", i+1, len(left), e.DecoName())
 	}
 }
 
@@ -94,11 +94,21 @@ func (d *Dir) Except(path string) {
 	d.member = paths
 }
 
+func (d *Dir) ExceptDir() {
+	paths := []string{}
+	for _, p := range d.member {
+		if fs, err := os.Stat(p); err == nil && !fs.IsDir() {
+			paths = append(paths, p)
+		}
+	}
+	d.member = paths
+}
+
 func (d Dir) Member() []string {
 	return d.member
 }
 
-func (d Dir) SelectItems(query string) (ps []string, err error) {
+func (d Dir) SelectItems() (ps []string, err error) {
 	if len(d.member) < 1 {
 		err = ErrNoItem
 		return
@@ -110,7 +120,7 @@ func (d Dir) SelectItems(query string) (ps []string, err error) {
 			return fmt.Sprintf("%s \U0001F4C1", rel)
 		}
 		return rel
-	}, fuzzyfinder.WithCursorPosition(fuzzyfinder.CursorPositionTop), fuzzyfinder.WithQuery(query))
+	}, fuzzyfinder.WithCursorPosition(fuzzyfinder.CursorPositionTop))
 	if err != nil {
 		return
 	}
