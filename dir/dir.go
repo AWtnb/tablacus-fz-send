@@ -87,9 +87,10 @@ func (d *Dir) Init(path string, all bool) {
 func (d *Dir) Except(path string) {
 	paths := []string{}
 	for _, p := range d.member {
-		if p != path {
-			paths = append(paths, p)
+		if strings.HasPrefix(p, path) {
+			continue
 		}
+		paths = append(paths, p)
 	}
 	d.member = paths
 }
