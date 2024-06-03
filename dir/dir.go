@@ -49,7 +49,7 @@ func Show(path string) {
 	fmt.Printf("Left items on %s:\n", dp)
 	for i, p := range left {
 		e := filesys.Entry{Path: p}
-		fmt.Printf("(%02d/%02d) - %s\n", i+1, len(left), e.DecoName())
+		fmt.Printf("- %s %s\n", filesys.PadCount(i+1, len(left)), e.DecoName())
 	}
 }
 

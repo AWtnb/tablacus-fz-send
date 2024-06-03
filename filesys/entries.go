@@ -12,6 +12,11 @@ func getDepth(path string) int {
 	return len(strings.Split(path, string(os.PathSeparator)))
 }
 
+func PadCount(i int, total int) string {
+	w := fmt.Sprint(len(fmt.Sprint(total)))
+	return fmt.Sprintf("(%"+w+"d/%"+w+"d)", i, total)
+}
+
 type Entries struct {
 	entries []Entry
 }
@@ -64,7 +69,7 @@ func (es Entries) sorted() []Entry {
 func (es Entries) Copy(src string, dest string) error {
 	for i, ent := range es.sorted() {
 		de := Entry{Path: dest}
-		fmt.Printf("- (%02d/%02d) Coping to %s: %s%s\n", i+1, len(es.entries), de.DecoName(), ent.DecoRelPath(src), ent.DecoName())
+		fmt.Printf("- %s Coping to %s: %s%s\n", PadCount(i+1, len(es.entries)), de.DecoName(), ent.DecoRelPath(src), ent.DecoName())
 		if err := ent.CopyTo(dest); err != nil {
 			return err
 		}
@@ -74,7 +79,7 @@ func (es Entries) Copy(src string, dest string) error {
 
 func (es Entries) Remove(from string) error {
 	for i, ent := range es.sorted() {
-		fmt.Printf("- (%02d/%02d) Deleting: %s%s\n", i+1, len(es.entries), ent.DecoRelPath(from), ent.DecoName())
+		fmt.Printf("- %s Deleting: %s%s\n", PadCount(i+1, len(es.entries)), ent.DecoRelPath(from), ent.DecoName())
 		if err := ent.Remove(); err != nil {
 			return err
 		}
