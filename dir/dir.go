@@ -18,7 +18,7 @@ var ErrNoItem = errors.New("no item to send")
 
 func getChildItem(root string, depth int, all bool) (paths []string) {
 	var d walk.Dir
-	d.Init(root, all, depth, "")
+	d.Init(root, all, depth, filesys.TrashName)
 	found, err := d.GetChildItem()
 	if err != nil {
 		return

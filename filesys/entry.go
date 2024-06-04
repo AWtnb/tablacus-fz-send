@@ -12,6 +12,8 @@ import (
 	"github.com/fatih/color"
 )
 
+var TrashName = "_obsolete"
+
 func copyFile(src string, newPath string) error {
 	if src == newPath {
 		return errors.New("src and dest are the same path")

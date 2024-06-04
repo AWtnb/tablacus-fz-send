@@ -24,7 +24,7 @@ type Sender struct {
 }
 
 func (sdr Sender) isDisposal() bool {
-	return sdr.Dest == "_obsolete"
+	return sdr.Dest == filesys.TrashName
 }
 
 func (sdr Sender) targets() ([]string, error) {
@@ -54,7 +54,7 @@ func (sdr Sender) destPath() (string, error) {
 	}
 	if len(sdr.Dest) < 1 {
 		var dd dir.Dir
-		dd.Init(sdr.Src, -1, false)
+		dd.Init(sdr.Src, 1, false)
 		sds := dd.Member()
 		if len(sds) < 1 {
 			return "", ErrNoSubDir
