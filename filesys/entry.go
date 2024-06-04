@@ -57,7 +57,7 @@ func (e Entry) DecoName() string {
 	}
 	if fs.IsDir() {
 		c := color.New(color.BgYellow, color.FgBlack)
-		return c.Sprint(b) + color.YellowString("\U0001F4C1")
+		return c.Sprint(b)
 	}
 	x := filepath.Ext(b)
 	n := strings.TrimSuffix(b, x)

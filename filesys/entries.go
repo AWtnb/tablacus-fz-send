@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/fatih/color"
 )
 
 func getDepth(path string) int {
@@ -78,8 +80,9 @@ func (es Entries) Copy(src string, dest string) error {
 }
 
 func (es Entries) Remove(from string) error {
+	c := color.New(color.CrossedOut)
 	for i, ent := range es.sorted() {
-		fmt.Printf("- %s Deleting: %s%s\n", PadCount(i+1, len(es.entries)), ent.DecoRelPath(from), ent.DecoName())
+		fmt.Printf("- %s Deleting: %s%s\n", PadCount(i+1, len(es.entries)), ent.DecoRelPath(from), c.Sprint(ent.Name()))
 		if err := ent.Remove(); err != nil {
 			return err
 		}
