@@ -16,7 +16,7 @@ import (
 
 var ErrNoItem = errors.New("no item to send")
 
-func getChildItem(root string, depth int, all bool) (paths []string) {
+func getChildItem(root string, depth int, all bool, self bool) (paths []string) {
 	var d walk.Dir
 	d.Init(root, all, depth, filesys.TrashName)
 	found, err := d.GetChildItem()
@@ -25,7 +25,7 @@ func getChildItem(root string, depth int, all bool) (paths []string) {
 	}
 	for _, f := range found {
 		n := filepath.Base(f)
-		if f == root || strings.HasSuffix(n, ".ini") || strings.HasPrefix(n, "~$") {
+		if (!self && f == root) || strings.HasSuffix(n, ".ini") || strings.HasPrefix(n, "~$") {
 			continue
 		}
 		paths = append(paths, f)
@@ -36,7 +36,7 @@ func getChildItem(root string, depth int, all bool) (paths []string) {
 func Show(path string) {
 	pe := filesys.Entry{Path: path}
 	dp := pe.DecoName()
-	left := getChildItem(path, 1, true)
+	left := getChildItem(path, 1, true, false)
 	if len(left) < 1 {
 		fmt.Printf("(now %s is empty)\n", dp)
 		return
@@ -83,9 +83,9 @@ type Dir struct {
 	member []string
 }
 
-func (d *Dir) Init(path string, depth int, all bool) {
+func (d *Dir) Init(path string, depth int, all bool, self bool) {
 	d.path = path
-	d.member = getChildItem(d.path, depth, all)
+	d.member = getChildItem(d.path, depth, all, self)
 }
 
 func (d *Dir) Except(path string) {

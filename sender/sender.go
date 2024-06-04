@@ -29,7 +29,7 @@ func (sdr Sender) isDisposal() bool {
 
 func (sdr Sender) targets() ([]string, error) {
 	var d dir.Dir
-	d.Init(sdr.Src, -1, true)
+	d.Init(sdr.Src, -1, true, false)
 	if fs, err := os.Stat(sdr.Dest); err == nil && fs.IsDir() {
 		d.Except(sdr.Dest)
 	}
@@ -40,8 +40,8 @@ func (sdr Sender) targets() ([]string, error) {
 func (sdr Sender) destPath() (string, error) {
 	if fs, err := os.Stat(sdr.Dest); err == nil && fs.IsDir() {
 		var dd dir.Dir
-		dd.Init(sdr.Dest, 1, false)
-		if 0 < len(dd.Member()) {
+		dd.Init(sdr.Dest, 1, false, true)
+		if 1 < len(dd.Member()) {
 			return dd.SelectItem()
 		}
 		return sdr.Dest, nil
@@ -54,7 +54,7 @@ func (sdr Sender) destPath() (string, error) {
 	}
 	if len(sdr.Dest) < 1 {
 		var dd dir.Dir
-		dd.Init(sdr.Src, 1, false)
+		dd.Init(sdr.Src, 1, false, false)
 		sds := dd.Member()
 		if len(sds) < 1 {
 			return "", ErrNoSubDir
