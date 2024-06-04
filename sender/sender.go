@@ -39,6 +39,11 @@ func (sdr Sender) targets() ([]string, error) {
 
 func (sdr Sender) destPath() (string, error) {
 	if fs, err := os.Stat(sdr.Dest); err == nil && fs.IsDir() {
+		var dd dir.Dir
+		dd.Init(sdr.Dest, false)
+		if 0 < len(dd.Member()) {
+			return dd.SelectItem()
+		}
 		return sdr.Dest, nil
 	}
 	if strings.Contains(sdr.Dest, string(os.PathSeparator)) {

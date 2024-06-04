@@ -109,24 +109,45 @@ func (d Dir) Member() []string {
 	return d.member
 }
 
-func (d Dir) SelectItems() (ps []string, err error) {
+func (d Dir) rel(path string) string {
+	rel, err := filepath.Rel(d.path, path)
+	if err != nil {
+		return path
+	}
+	if fs, err := os.Stat(path); err == nil && fs.IsDir() {
+		return fmt.Sprintf("%s \U0001F4C1", rel)
+	}
+	return rel
+}
+
+func (d Dir) SelectItem() (path string, err error) {
+	if len(d.member) < 1 {
+		err = ErrNoItem
+		return
+	}
+	idx, err := fuzzyfinder.Find(d.member, func(i int) string {
+		return d.rel(d.member[i])
+	}, fuzzyfinder.WithCursorPosition(fuzzyfinder.CursorPositionTop))
+	if err != nil {
+		return
+	}
+	path = d.member[idx]
+	return
+}
+
+func (d Dir) SelectItems() (paths []string, err error) {
 	if len(d.member) < 1 {
 		err = ErrNoItem
 		return
 	}
 	idxs, err := fuzzyfinder.FindMulti(d.member, func(i int) string {
-		p := d.member[i]
-		rel, _ := filepath.Rel(d.path, p)
-		if fs, err := os.Stat(p); err == nil && fs.IsDir() {
-			return fmt.Sprintf("%s \U0001F4C1", rel)
-		}
-		return rel
+		return d.rel(d.member[i])
 	}, fuzzyfinder.WithCursorPosition(fuzzyfinder.CursorPositionTop))
 	if err != nil {
 		return
 	}
 	for _, i := range idxs {
-		ps = append(ps, d.member[i])
+		paths = append(paths, d.member[i])
 	}
 	return
 }
