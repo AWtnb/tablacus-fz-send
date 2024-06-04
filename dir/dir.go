@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/AWtnb/go-walk"
@@ -46,6 +47,9 @@ func Show(path string) {
 		fmt.Printf(" - %s\n", e.DecoName())
 		return
 	}
+	sort.Slice(left, func(i, j int) bool {
+		return filepath.Base(left[i]) < filepath.Base(left[j])
+	})
 	fmt.Printf("Left items on %s:\n", dp)
 	for i, p := range left {
 		e := filesys.Entry{Path: p}
@@ -79,9 +83,9 @@ type Dir struct {
 	member []string
 }
 
-func (d *Dir) Init(path string, all bool) {
+func (d *Dir) Init(path string, depth int, all bool) {
 	d.path = path
-	d.member = getChildItem(d.path, -1, all)
+	d.member = getChildItem(d.path, depth, all)
 }
 
 func (d *Dir) Except(path string) {
