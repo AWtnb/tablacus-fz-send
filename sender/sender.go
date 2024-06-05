@@ -4,13 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/AWtnb/go-asker"
 	"github.com/AWtnb/tablacus-fz-send/dir"
 	"github.com/AWtnb/tablacus-fz-send/filesys"
-	"github.com/ktr0731/go-fuzzyfinder"
 )
 
 var (
@@ -59,12 +57,10 @@ func (sdr Sender) destPath() (string, error) {
 		if len(sds) < 1 {
 			return "", ErrNoSubDir
 		}
-		idx, err := fuzzyfinder.Find(sds, func(i int) string {
-			p := sds[i]
-			rel, _ := filepath.Rel(sdr.Src, p)
-			return filepath.Base(rel)
-		})
-		return sds[idx], err
+		if len(sds) == 1 {
+			return sds[0], nil
+		}
+		return dd.SelectItem()
 	}
 	return dir.Create(sdr.Src, sdr.Dest)
 }

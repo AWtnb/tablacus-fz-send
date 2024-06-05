@@ -35,14 +35,14 @@ func getChildItem(root string, depth int, all bool, self bool) (paths []string) 
 
 func Show(path string) {
 	pe := filesys.Entry{Path: path}
-	dp := pe.DecoName()
+	dn := pe.DecoName()
 	left := getChildItem(path, 1, true, false)
 	if len(left) < 1 {
-		fmt.Printf("(now %s is empty)\n", dp)
+		fmt.Printf("(now %s is empty)\n", dn)
 		return
 	}
 	if len(left) == 1 {
-		fmt.Printf("Left item on %s:\n", dp)
+		fmt.Printf("Left item on %s:\n", dn)
 		e := filesys.Entry{Path: left[0]}
 		fmt.Printf(" - %s\n", e.DecoName())
 		return
@@ -50,7 +50,7 @@ func Show(path string) {
 	sort.Slice(left, func(i, j int) bool {
 		return filepath.Base(left[i]) < filepath.Base(left[j])
 	})
-	fmt.Printf("Left items on %s:\n", dp)
+	fmt.Printf("Left items on %s:\n", dn)
 	for i, p := range left {
 		e := filesys.Entry{Path: p}
 		fmt.Printf("- %s %s\n", filesys.PadCount(i+1, len(left)), e.DecoName())
@@ -116,8 +116,9 @@ func (d Dir) Member() []string {
 func (d Dir) rel(path string) string {
 	rel, err := filepath.Rel(d.path, path)
 	if err != nil {
-		return path
+		return filepath.ToSlash(path)
 	}
+	rel = filepath.ToSlash(rel)
 	if fs, err := os.Stat(path); err == nil && fs.IsDir() {
 		return fmt.Sprintf("%s \U0001F4C1", rel)
 	}
