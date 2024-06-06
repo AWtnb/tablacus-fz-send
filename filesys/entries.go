@@ -74,7 +74,7 @@ func (es Entries) sorted() []Entry {
 func (es Entries) Copy(src string, dest string) error {
 	for i, ent := range es.sorted() {
 		de := Entry{Path: dest}
-		fmt.Printf("- %s Coping to %s: %s%s\n", PadCount(i+1, len(es.entries)), de.DecoName(), ent.DecoRelPath(src), ent.DecoName())
+		fmt.Printf("- %s Coping to %s <== %s%s\n", PadCount(i+1, len(es.entries)), de.DecoName(), ent.DecoRelPath(src), ent.DecoName())
 		if err := ent.CopyTo(dest); err != nil {
 			return err
 		}
