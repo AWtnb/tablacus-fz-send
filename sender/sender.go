@@ -31,7 +31,6 @@ func (sdr Sender) targets() ([]string, error) {
 	if fs, err := os.Stat(sdr.Dest); err == nil && fs.IsDir() {
 		d.Except(sdr.Dest)
 	}
-	d.ExceptDir()
 	return d.SelectItems()
 }
 

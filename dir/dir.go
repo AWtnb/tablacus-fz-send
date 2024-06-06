@@ -99,16 +99,6 @@ func (d *Dir) Except(path string) {
 	d.member = paths
 }
 
-func (d *Dir) ExceptDir() {
-	paths := []string{}
-	for _, p := range d.member {
-		if fs, err := os.Stat(p); err == nil && !fs.IsDir() {
-			paths = append(paths, p)
-		}
-	}
-	d.member = paths
-}
-
 func (d Dir) Member() []string {
 	return d.member
 }
