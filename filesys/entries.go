@@ -63,6 +63,9 @@ func (es Entries) sorted() []Entry {
 		return filepath.Base(ss[i].Path) < filepath.Base(ss[j].Path)
 	})
 	sort.SliceStable(ss, func(i, j int) bool {
+		return ss[i].Path < ss[j].Path
+	})
+	sort.SliceStable(ss, func(i, j int) bool {
 		return getDepth(ss[i].Path) > getDepth(ss[j].Path)
 	})
 	return ss
