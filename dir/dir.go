@@ -6,11 +6,11 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"github.com/AWtnb/go-walk"
 	"github.com/AWtnb/tablacus-fz-send/filesys"
+	"github.com/fatih/color"
 	"github.com/ktr0731/go-fuzzyfinder"
 )
 
@@ -33,6 +33,30 @@ func getChildItem(root string, depth int, all bool, self bool) (paths []string) 
 	return
 }
 
+func countDir(paths []string) int {
+	n := 0
+	for _, p := range paths {
+		if fs, err := os.Stat(p); err == nil && fs.IsDir() {
+			n += 1
+		}
+	}
+	return n
+}
+
+func groupExt(paths []string) (map[string]int, int) {
+	var total map[string]int = make(map[string]int)
+	w := 0
+	for _, p := range paths {
+		if e := filepath.Ext(p); 0 < len(e) {
+			total[e] += 1
+			if w < len(e) {
+				w = len(e)
+			}
+		}
+	}
+	return total, w
+}
+
 func Show(path string) {
 	pe := filesys.Entry{Path: path}
 	dn := pe.DecoName()
@@ -47,13 +71,11 @@ func Show(path string) {
 		fmt.Printf(" - %s\n", e.DecoName())
 		return
 	}
-	sort.Slice(left, func(i, j int) bool {
-		return filepath.Base(left[i]) < filepath.Base(left[j])
-	})
 	fmt.Printf("Left items on %s:\n", dn)
-	for i, p := range left {
-		e := filesys.Entry{Path: p}
-		fmt.Printf("- %s %s\n", filesys.PadCount(i+1, len(left)), e.DecoName())
+	exs, w := groupExt(left)
+	fmt.Printf("- %s%s %s\n", color.New(color.BgYellow, color.FgBlack).Sprint("\U0001F4C1"), strings.Repeat(" ", w-2), filesys.PadCount(countDir(left), len(left)))
+	for k := range exs {
+		fmt.Printf("- %s%s %s\n", color.New(color.BgWhite, color.FgBlack).Sprint(k), strings.Repeat(" ", w-len(k)), filesys.PadCount(exs[k], len(left)))
 	}
 }
 
