@@ -73,9 +73,9 @@ func Show(path string) {
 	}
 	fmt.Printf("Left items on %s:\n", dn)
 	exs, w := groupExt(left)
-	fmt.Printf("- %s%s %s\n", color.New(color.BgYellow, color.FgBlack).Sprint("\U0001F4C1"), strings.Repeat(" ", w-2), filesys.PadCount(countDir(left), len(left)))
+	fmt.Printf("- %s%s %s %s\n", strings.Repeat(" ", w-2), color.YellowString("\U0001F4C1"), color.HiBlackString("\u00d7"), color.HiGreenString(fmt.Sprint(countDir(left))))
 	for k := range exs {
-		fmt.Printf("- %s%s %s\n", color.New(color.BgWhite, color.FgBlack).Sprint(k), strings.Repeat(" ", w-len(k)), filesys.PadCount(exs[k], len(left)))
+		fmt.Printf("- %s%s %s %s\n", k, strings.Repeat(" ", w-len(k)), color.HiBlackString("\u00d7"), color.HiGreenString(fmt.Sprint(exs[k])))
 	}
 }
 
