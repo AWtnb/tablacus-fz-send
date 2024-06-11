@@ -27,7 +27,11 @@ func (sdr Sender) isDisposal() bool {
 
 func (sdr Sender) targets() ([]string, error) {
 	var d dir.Dir
-	d.Init(sdr.Src, -1, true, false)
+	if sdr.isDisposal() {
+		d.Init(sdr.Src, 1, true, false)
+	} else {
+		d.Init(sdr.Src, -1, true, false)
+	}
 	if fs, err := os.Stat(sdr.Dest); err == nil && fs.IsDir() {
 		d.Except(sdr.Dest)
 	}
