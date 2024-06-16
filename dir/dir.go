@@ -43,18 +43,14 @@ func countDir(paths []string) int {
 	return n
 }
 
-func groupExt(paths []string) (map[string]int, int) {
+func groupExt(paths []string) map[string]int {
 	var total map[string]int = make(map[string]int)
-	w := 0
 	for _, p := range paths {
 		if e := filepath.Ext(p); 0 < len(e) {
 			total[e] += 1
-			if w < len(e) {
-				w = len(e)
-			}
 		}
 	}
-	return total, w
+	return total
 }
 
 func Show(path string) {
@@ -72,10 +68,10 @@ func Show(path string) {
 		return
 	}
 	fmt.Printf("Left items on %s:\n", dn)
-	exs, w := groupExt(left)
-	fmt.Printf("- %s%s %s %s\n", strings.Repeat(" ", w-2), color.YellowString("\U0001F4C1"), color.HiBlackString("\u00d7"), color.HiGreenString(fmt.Sprint(countDir(left))))
+	fmt.Printf("- %s %s\n", color.YellowString("\U0001F4C1"), color.HiGreenString(fmt.Sprintf("\u00d7%d", countDir(left))))
+	exs := groupExt(left)
 	for k := range exs {
-		fmt.Printf("- %s%s %s %s\n", k, strings.Repeat(" ", w-len(k)), color.HiBlackString("\u00d7"), color.HiGreenString(fmt.Sprint(exs[k])))
+		fmt.Printf("- %s %s\n", k, color.HiGreenString(fmt.Sprintf("\u00d7%d", exs[k])))
 	}
 }
 
