@@ -140,7 +140,7 @@ func (d Dir) SelectItem() (path string, err error) {
 	}
 	idx, err := fuzzyfinder.Find(d.member, func(i int) string {
 		return d.rel(d.member[i])
-	}, fuzzyfinder.WithCursorPosition(fuzzyfinder.CursorPositionTop))
+	})
 	if err != nil {
 		return
 	}
