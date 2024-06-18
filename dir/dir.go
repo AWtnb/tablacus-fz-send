@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/AWtnb/go-walk"
@@ -15,6 +16,17 @@ import (
 )
 
 var ErrNoItem = errors.New("no item to send")
+
+func orderSelectable(ss []string) []string {
+	sep := string(os.PathSeparator)
+	sort.Slice(ss, func(i, j int) bool {
+		return len(filepath.Base(ss[i])) > len(filepath.Base(ss[j]))
+	})
+	sort.SliceStable(ss, func(i, j int) bool {
+		return len(strings.Split(ss[i], sep)) > len(strings.Split(ss[j], sep))
+	})
+	return ss
+}
 
 func getChildItem(root string, depth int, all bool, self bool) (paths []string) {
 	var d walk.Dir
@@ -138,13 +150,14 @@ func (d Dir) SelectItem() (path string, err error) {
 		err = ErrNoItem
 		return
 	}
-	idx, err := fuzzyfinder.Find(d.member, func(i int) string {
-		return d.rel(d.member[i])
-	})
+	ss := orderSelectable(d.member)
+	idx, err := fuzzyfinder.Find(ss, func(i int) string {
+		return d.rel(ss[i])
+	}, fuzzyfinder.WithCursorPosition(fuzzyfinder.CursorPositionTop))
 	if err != nil {
 		return
 	}
-	path = d.member[idx]
+	path = ss[idx]
 	return
 }
 
@@ -153,14 +166,15 @@ func (d Dir) SelectItems() (paths []string, err error) {
 		err = ErrNoItem
 		return
 	}
-	idxs, err := fuzzyfinder.FindMulti(d.member, func(i int) string {
-		return d.rel(d.member[i])
+	ss := orderSelectable(d.member)
+	idxs, err := fuzzyfinder.FindMulti(ss, func(i int) string {
+		return d.rel(ss[i])
 	}, fuzzyfinder.WithCursorPosition(fuzzyfinder.CursorPositionTop))
 	if err != nil {
 		return
 	}
 	for _, i := range idxs {
-		paths = append(paths, d.member[i])
+		paths = append(paths, ss[i])
 	}
 	return
 }
