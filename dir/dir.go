@@ -20,6 +20,9 @@ var ErrNoItem = errors.New("no item to send")
 func orderSelectable(ss []string) []string {
 	sep := string(os.PathSeparator)
 	sort.Slice(ss, func(i, j int) bool {
+		return filepath.Base(ss[i]) > filepath.Base(ss[j])
+	})
+	sort.SliceStable(ss, func(i, j int) bool {
 		return len(filepath.Base(ss[i])) > len(filepath.Base(ss[j]))
 	})
 	sort.SliceStable(ss, func(i, j int) bool {
